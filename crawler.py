@@ -46,12 +46,22 @@ class Crawl:
         while self.urls:
             _url = self.urls.pop()
             logging.debug(f'getting data from url {_url}')
-            data = self.get_data(_url)
-            logging.debug(f'get data for title {data["title"]}')
-            self.get_url()
-            logging.debug(f'urls to be scraped {self.urls}')
-            self.save_to_file(data)
-            sleep(20)
+            try: 
+                data = self.get_data(_url)
+            except Exception as e:
+                logging.debug(f'error getting data: {str(e)}')
+            else:
+                logging.debug(f'get data for title {data["title"]}')
+                try:
+                    self.get_url()
+                except Exception as e:
+                    logging.error(f'error getting urls: {str(e)}')
+                logging.debug(f'urls to be scraped {self.urls}')
+                try:
+                    self.save_to_file(data)
+                except Exception as e:
+                    logging.error(f'error saving to file: {str(e)}')
+                sleep(20)
 
     def save_to_file(self, data):
         folder = os.environ['DIR']
